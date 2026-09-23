@@ -13,7 +13,7 @@ labels (when present) are used only to validate.
 | Cleaning, `log(1+x)` skew reduction, scaling, ID removal | `src/preprocessor.py` |
 | Three unsupervised detectors + `.pkl` persistence | `src/train.py` |
 | Precision / Recall / F1 / ROC-AUC / Silhouette / confusion matrix | `src/evaluator.py` |
-| SOC dashboard (KPIs, PCA map, score histogram, alert queue) | `app.py` |
+| SOC dashboard (KPIs, PCA map, score histogram, alert queue) | `app.py` + `.streamlit/config.toml` |
 | One-command pipeline | `run.py` |
 
 ## 2. Architecture
@@ -92,11 +92,14 @@ Run this from the project root (the pickles reference the `src` package).
 Only load `.pkl` files you created yourself - pickle can execute code.
 
 ### Dashboard
-* **Sidebar** – CSV upload (or built-in synthetic traffic), model selector, contamination slider, advanced parameters.
-* **KPI cards** – flows processed, anomalies, anomaly %, threat level.
-* **Threat overview tab** – PCA scatter (red = anomaly), score histogram with cut-off, filterable alert queue sorted by severity (CSV export), validation metrics + confusion matrix when labels exist.
-* **Model comparison tab** – all three models side by side.
-* **Data & features tab** – which columns were used and which were log-transformed.
+Dark "SOC console" theme (theme file: `.streamlit/config.toml`; extra styling is in `app.py`).
+* **Sidebar** – CSV upload (or built-in synthetic traffic), model picker, anomaly-share slider, advanced parameters, cache reset.
+* **Header + KPI cards** – flows, anomalies, anomaly rate, critical alerts, and a threat-level gauge.
+* **Overview** – PCA traffic map (2D/3D toggle, coloured by severity), score histogram with cut-off, anomalies-over-time chart.
+* **Attack analysis** – severity mix, detection by attack type, top source IPs, targeted ports, features that distinguish anomalies.
+* **Investigate** – filterable alert queue (CSV export); click a row to see *why* that flow was flagged.
+* **Model comparison** – all three detectors side by side with charts.
+* **Data & features** – features used, log-transforms applied, raw preview.
 
 The dashboard fits the chosen model on the uploaded batch (typical threat-hunting use). Persisted `.pkl` artifacts are for scoring new traffic programmatically.
 
